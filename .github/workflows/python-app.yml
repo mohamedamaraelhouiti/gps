@@ -1,37 +1,41 @@
-image: python:3.11
+name: CI
 
-stages:
-  - lint
-  - test
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
 
-before_script:
-  - python --version
-  - pip install --upgrade pip
-  - pip install -r requirements.txt
-  # Per si coverage/pylint no estan al requirements.txt:
-  - pip install pylint coverage
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-lint:
-  stage: lint
-  script:
-    # Ajusta "main.py" i/o la carpeta si el projecte té un altre nom
-    - pylint *.py
-  allow_failure: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-test_coverage:
-  stage: test
-  script:
-    # Executa tests amb coverage
-    - coverage run --branch test.py
-    - coverage report -m
-    # Opcional (útil per veure-ho com a artifact)
-    - coverage xml -o coverage.xml
-  artifacts:
-    when: always
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage.xml
-    paths:
-      - coverage.xml
-  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pylint coverage
+
+      - name: Lint with pylint
+        run: |
+          pylint *.py
+
+      - name: Run tests with coverage
+        run: |
+          coverage run --branch test.py
+          coverage report -m
+          coverage xml -o coverage.xml
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
