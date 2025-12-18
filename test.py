@@ -1,24 +1,24 @@
-"""Tests for transform module."""  
+"""Tests"""  
 
 import unittest
 import transform
 
 
 class TestStringMethods(unittest.TestCase):
-    """String transformation tests."""  
+    """Tests de transformació de strings"""  
 
     def test_is_upper(self):
-        """to_upper_case should return HELLO."""
+        """hauria de retornar HELLO (majúscules)."""
         string = transform.to_upper_case("hello")
         self.assertEqual(string, "HELLO")
 
     def test_is_lower(self):
-        """To_lower_case should return hello."""
+        """hauria de retornar hello (minúscules)."""
         string = transform.to_lower_case("HELLO")
         self.assertEqual(string, "hello")
 
     def test_is_capitalize(self):
-        """To_capitalize should return Hello."""
+        """hauria de retornar Hello (normal)."""
         string = transform.to_capitalize("HELLO")
         self.assertEqual(string, "Hello")
 
