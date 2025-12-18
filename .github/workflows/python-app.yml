@@ -1,1 +1,37 @@
+image: python:3.11
 
+stages:
+  - lint
+  - test
+
+before_script:
+  - python --version
+  - pip install --upgrade pip
+  - pip install -r requirements.txt
+  # Per si coverage/pylint no estan al requirements.txt:
+  - pip install pylint coverage
+
+lint:
+  stage: lint
+  script:
+    # Ajusta "main.py" i/o la carpeta si el projecte té un altre nom
+    - pylint *.py
+  allow_failure: false
+
+test_coverage:
+  stage: test
+  script:
+    # Executa tests amb coverage
+    - coverage run --branch test.py
+    - coverage report -m
+    # Opcional (útil per veure-ho com a artifact)
+    - coverage xml -o coverage.xml
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    paths:
+      - coverage.xml
+  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+%)/'
